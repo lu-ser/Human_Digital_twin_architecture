@@ -1,6 +1,6 @@
 from config.config_loader import ConfigLoader
-from llm.provider import create_structured_prompt_chain
-from models.output_schemas import Triple
+from llm.provider import get_llm_with_structured_output
+from models.output_schemas import Triple, TripletList
 from typing import List, Dict, Any
 
 
@@ -22,37 +22,29 @@ class TripletExtractor:
         Returns:
             List of extracted triplets
         """
-        # System prompt for triplet extraction
-        system_prompt = """
+        # Get LLM with structured output using TripletList model
+        llm = get_llm_with_structured_output(TripletList)
+
+        # Create the message with explicit JSON formatting instructions
+        message = f"""
         You are a knowledge triplet extraction system. Your task is to extract subject-predicate-object triplets from the provided text.
-        
+
         Guidelines:
         - Focus on extracting factual information
         - Identify entities (people, objects, concepts) as subjects and objects
         - Identify relationships between entities as predicates
         - Extract only explicit information, do not infer
-        - Return each triplet as a structured object with subject, predicate and object fields
-        """
 
-        # User prompt template
-        human_prompt = """
         Extract knowledge triplets from the following text:
-        
+
         {text}
         """
 
-        # Create chain for triplet extraction
-        extract_chain = create_structured_prompt_chain(
-            system_prompt=system_prompt,
-            human_prompt=human_prompt,
-            output_class=List[Triple],
-        )
-
-        # Extract triplets
-        triplets = extract_chain(text=text)
+        # Extract triplets using structured output
+        result = llm.invoke(message)
 
         # Convert to dictionary format
-        return [triplet.dict() for triplet in triplets]
+        return [triplet.dict() for triplet in result.triplets]
 
     def extract_from_profile(
         self, profile_data: Dict[str, Any]
@@ -69,7 +61,7 @@ class TripletExtractor:
         # Convert profile data to text format
         profile_text = self._profile_to_text(profile_data)
 
-        # Use the same extraction method as normal text
+        # Use the same text extraction method
         return self.extract_from_text(profile_text)
 
     def _profile_to_text(self, profile_data: Dict[str, Any]) -> str:
