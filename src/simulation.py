@@ -174,6 +174,65 @@ class Simulation:
 
         print(f"Risultati aggregati salvati in {result_file}")
 
+    def _interactive_analysis(self, brain, scenario_name):
+        """
+        Esegue un'analisi interattiva permettendo al LLM di interrogare il knowledge graph
+
+        Args:
+            brain: Istanza di PersonalDigitalBrain
+            scenario_name: Nome dello scenario
+
+        Returns:
+            Risultato dell'analisi
+        """
+        # Crea prompt iniziale
+        prompt = brain._create_analysis_prompt()
+
+        # Ottieni LLM
+        llm = get_llm_with_structured_output(AnalysisResult)
+
+        # Inizializza la conversazione
+        conversation = [{"role": "system", "content": prompt}]
+
+        # Simula alcune iterazioni di dialogo
+        max_iterations = 5
+        for i in range(max_iterations):
+            # Ottieni risposta dal LLM
+            response = llm.invoke(conversation)
+
+            # Analizza la risposta per estrarre query
+            query_match = re.search(r"QUERY:\s*(SELECT.+)", response.reasoning)
+
+            if query_match:
+                query = query_match.group(1)
+                # Esegui la query
+                results = brain.query_knowledge_graph(query)
+
+                # Aggiungi risultati alla conversazione
+                result_text = "\n".join(
+                    [
+                        f"- Soggetto: {t['subject']}, Predicato: {t['predicate']}, Oggetto: {t['object']}"
+                        for t in results
+                    ]
+                )
+
+                conversation.append(
+                    {"role": "assistant", "content": response.reasoning}
+                )
+                conversation.append(
+                    {
+                        "role": "user",
+                        "content": f"Risultati della query:\n{result_text}\n\nPuoi continuare l'analisi con altre query o fornire le tue conclusioni.",
+                    }
+                )
+            else:
+                # LLM ha completato l'analisi
+                break
+
+        # Ottieni il risultato finale
+        final_result = llm.invoke(conversation)
+        return final_result
+
 
 def main():
     """

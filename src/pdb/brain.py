@@ -98,33 +98,96 @@ class PersonalDigitalBrain:
 
     def _create_analysis_prompt(self) -> str:
         """
-        Crea un prompt per il LLM per analizzare il knowledge graph
+        Crea un prompt per il LLM che spiega come interrogare il knowledge graph
 
         Returns:
             Stringa prompt formattata
         """
-        # Converti knowledge graph in una rappresentazione testuale
-        kg_representation = ""
+        # Creazione di metadati del knowledge graph
+        sources = set()
+        predicates = set()
+        entity_types = set()
+
         for triplet_id, data in self.knowledge_graph.items():
             triplet = data["triplet"]
-            sources = ", ".join(data["sources"])
-            kg_representation += f"- Soggetto: {triplet['subject']}, Predicato: {triplet['predicate']}, Oggetto: {triplet['object']} (Fonti: {sources})\n"
+            sources.update(data["sources"])
+            predicates.add(triplet["predicate"])
 
-        # Crea il prompt
+            # Estrazione informazioni sui tipi se disponibili
+            if triplet["predicate"] == "rdf:type":
+                entity_types.add(triplet["object"])
+
+        # Rappresentazione testuale dei metadati
+        metadata = f"""
+        Fonti dati: {', '.join(sources)}
+        Tipi di relazioni: {', '.join(predicates)}
+        Tipi di entità: {', '.join(entity_types)}
+        """
+
+        # Prompt principale
         prompt = f"""
         Stai analizzando un knowledge graph di un Human Digital Twin per identificare potenziali trigger di intervento.
         
-        KNOWLEDGE GRAPH:
-        {kg_representation}
+        Il knowledge graph contiene i seguenti tipi di informazioni:
+        {metadata}
         
-        Basandoti su questo knowledge graph, identifica eventuali pattern o anomalie che potrebbero indicare la necessità di un intervento.
-        Per ogni trigger di intervento che identifichi, fornisci:
-        1. Il tipo di trigger
-        2. Un punteggio di confidenza (0-1)
-        3. Una descrizione dettagliata
-        4. Evidenze a supporto dal knowledge graph
+        Invece di fornirti l'intero knowledge graph, puoi interrogarlo usando query SPARQL-like. Ad esempio:
         
-        Fornisci anche il tuo processo di ragionamento.
+        QUERY: SELECT ?subject ?predicate ?object WHERE {{ ?subject ?predicate ?object . FILTER(?predicate = "sosa:hasSimpleResult") }}
+        
+        Questa query restituirebbe tutti i triplet dove il predicato è "sosa:hasSimpleResult".
+        
+        Il tuo compito è:
+        
+        1. Formulare query per recuperare parti rilevanti del knowledge graph
+        2. Analizzare i risultati per identificare pattern o anomalie che potrebbero indicare la necessità di un intervento
+        3. Per ogni trigger di intervento che identifichi, fornisci:
+        a. Il tipo di trigger
+        b. Un punteggio di confidenza (0-1)
+        c. Una descrizione dettagliata
+        d. Evidenze a supporto dal knowledge graph
+        
+        Inizia formulando alcune query iniziali per comprendere cosa è disponibile nel knowledge graph.
         """
 
         return prompt
+
+    def query_knowledge_graph(self, query_str: str) -> List[Dict[str, str]]:
+        """
+        Esegue una query sul knowledge graph
+
+        Args:
+            query_str: Stringa di query in formato SPARQL-like
+
+        Returns:
+            Lista di triplet corrispondenti
+        """
+        # Implementazione semplificata di parsing query
+        filters = {}
+
+        # Parsing base per scopo dimostrativo
+        if "FILTER" in query_str:
+            filter_parts = query_str.split("FILTER")[1].strip("(){} ").split(" AND ")
+            for part in filter_parts:
+                if "=" in part:
+                    field, value = part.split("=")
+                    field = field.strip("? ")
+                    value = value.strip(" \"'")
+                    filters[field] = value
+
+        # Applicazione filtri al knowledge graph
+        results = []
+        for triplet_id, data in self.knowledge_graph.items():
+            triplet = data["triplet"]
+
+            # Verifica se il triplet corrisponde a tutti i filtri
+            match = True
+            for field, value in filters.items():
+                if field in triplet and triplet[field] != value:
+                    match = False
+                    break
+
+            if match:
+                results.append(triplet)
+
+        return results
