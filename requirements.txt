@@ -1,0 +1,12 @@
+
+langchain
+langchain-core
+langchain-openai
+langchain-groq
+openai
+groq
+pydantic
+python-dotenv
+pyyaml
+rdflib
+pandas

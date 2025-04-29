@@ -1,0 +1,47 @@
+human-digital-twin/
+├── config/
+│   ├── config.yaml          # Configurazione principale
+│   └── .env                 # Variabili d'ambiente (API keys)
+├── data/
+│   ├── raw/                 # Dati grezzi da diverse fonti
+│   │   ├── voice/           # Trascrizioni vocali
+│   │   ├── sensors/         # Dati sensori IoT
+│   │   ├── apps/            # Dati applicazioni
+│   │   └── profiles/        # Dati profilo utente
+│   └── processed/           # Dati elaborati
+├── src/
+│   ├── config/
+│   │   └── config_loader.py # Classe per caricare configurazioni
+│   ├── data_layer/          # Gestione dati (Multimodal Data Layer)
+│   │   ├── __init__.py
+│   │   ├── data_manager.py  # Gestore integrazione dati
+│   │   ├── unstructured/    # Gestione dati non strutturati
+│   │   │   ├── __init__.py
+│   │   │   ├── voice_processor.py
+│   │   │   └── profile_processor.py
+│   │   └── structured/      # Gestione dati strutturati
+│   │       ├── __init__.py
+│   │       ├── digital_twin.py
+│   │       └── app_data.py
+│   ├── pdb/                 # Personal Digital Brain
+│   │   ├── __init__.py
+│   │   ├── brain.py         # Classe principale PDB
+│   │   ├── ontology/        # Sistema ontologico
+│   │   │   ├── __init__.py
+│   │   │   └── ontology_system.py
+│   │   └── triplet_extraction/ # Estrazione triplet
+│   │       ├── __init__.py
+│   │       └── extractor.py
+│   ├── llm/                 # Integrazione LLM
+│   │   ├── __init__.py
+│   │   ├── provider.py      # Basato su example_provider
+│   │   └── prompts.py       # Prompt per LLM
+│   ├── api_rotation/        # Gestione rotazione API
+│   │   ├── __init__.py
+│   │   └── api_rotation.py 
+│   └── models/              # Modelli di dati
+│       ├── __init__.py
+│       └── output_schemas.py # Schema output strutturati
+├── tests/
+├── requirements.txt
+└── README.md

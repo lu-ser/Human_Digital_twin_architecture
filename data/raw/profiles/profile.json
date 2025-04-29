@@ -1,0 +1,48 @@
+{
+    "basic_info": {
+      "name": "Sheldon Cooper",
+      "gender": "Male",
+      "occupation": "Theoretical Physicist",
+      "institution": "Caltech",
+      "hometown": "Galveston, Texas",
+      "residence": "Pasadena, California"
+    },
+    "personality_traits": {
+      "analytical_thinking": "High",
+      "social_skills": "Low",
+      "rigidity": "High",
+      "need_for_structure": "High",
+      "anxiety_level": "Moderate to High",
+      "competitive_nature": "High",
+      "adaptability": "Low"
+    },
+    "behavioral_patterns": {
+      "routine_adherence": "Strictly follows routines and schedules",
+      "cleanliness": "High standards for hygiene and organization",
+      "food_preferences": "Highly specific requirements for food preparation and consumption",
+      "seating_preferences": "Strong attachment to specific locations ('my spot')",
+      "conflict_resolution": "Avoids direct confrontation, prefers passive-aggressive strategies",
+      "sleep_schedule": "Consistent, follows strict bedtime routine"
+    },
+    "interests": {
+      "primary": ["Theoretical physics", "Science fiction", "Trains and railroads", "Comic books", "Board games"],
+      "secondary": ["Video games", "Flag collecting", "History of scientific achievements"]
+    },
+    "sensory_sensitivities": {
+      "noise": "High sensitivity to unexpected or loud noises",
+      "touch": "Discomfort with physical contact, especially from strangers",
+      "temperature": "Precise comfort requirements for room climate",
+      "food_texture": "Strong preferences for specific textures and preparations"
+    },
+    "triggers": {
+      "stress": ["Schedule changes", "Social obligations", "Germs or contamination concerns", "Being wrong or corrected"],
+      "anxiety": ["Large gatherings", "Physical illness", "Relationship complexities", "Professional competition"],
+      "comfort": ["Structured routines", "Scientific discussion", "Recognition of achievements", "Familiar environments"]
+    },
+    "communication_style": {
+      "verbosity": "High, tends toward monologues",
+      "directness": "Extremely direct, often to the point of social inappropriateness",
+      "humor_comprehension": "Limited understanding of sarcasm and irony",
+      "emotional_expression": "Limited, difficulty recognizing and expressing emotions"
+    }
+  }
